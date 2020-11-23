@@ -38,7 +38,7 @@ class Gene(ABC):
         pass
 
 
-class GA(ABC):
+class GA():
     def __init__(self, gene_generator, **kwargs):
         self.genes = []
         self.gene_generator = gene_generator  # 随机基因生成器
