@@ -92,9 +92,10 @@ class FuncGA(GA):
         print(f'generation={generation}, x={genes[0].decode()}, y={genes[0].fitness}')
 
 
-temp = FuncGA(
-    gene_generator=lambda: FuncGene()
-)
-temp.run()
+FuncGA(
+    gene_generator=lambda: FuncGene(),
+    variation_rate=0.1,
+    safe_num=2000
+).run()
 plt.ioff()
 plt.show()
