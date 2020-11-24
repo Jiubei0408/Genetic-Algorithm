@@ -1,10 +1,12 @@
 import random
 import math
 from GA import Gene, GA
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def func(x):
-    return -x * x * x + 10000 * x * x + math.sqrt(x) - 1
+    return x
 
 
 l = 1
@@ -60,7 +62,35 @@ class FuncGene(Gene):
         return gene
 
 
-temp = GA(
+plt.ion()
+x = np.linspace(l, r, 100000)
+y = func(x)
+plt.figure()
+
+
+def paint(genes):
+    plt.xlim((l, r))
+    plt.cla()
+    plt.title(f'Now answer: x={genes[0].decode()}, y={genes[0].fitness}')
+    plt.plot(x, y)
+    plt.plot([gene.decode() for gene in genes], [gene.fitness for gene in genes], '.r', ms=0.5)
+    plt.pause(0.01)
+
+
+class FuncGA(GA):
+    def before_one_generation(self, generation, genes):
+        if generation != 1:
+            return
+        paint(genes)
+
+    def after_one_generation(self, generation, genes):
+        paint(genes)
+        print(f'generation={generation}, x={genes[0].decode()}, y={genes[0].fitness}')
+
+
+temp = FuncGA(
     gene_generator=lambda: FuncGene()
 )
 temp.run()
+plt.ioff()
+plt.show()
