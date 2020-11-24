@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 
 
 def func(x):
-    return x
+    return np.log(np.abs(-(x - 5e6) * (x - 1e6) * (-2 * x + 2e6) * (x - 3e6) * (x - 4e6) * (-x + 6e6)) + 1)
 
 
-l = 1
-r = 1e9
+l = 0.5e6
+r = 6e6
 l = int(l)
 r = int(r)
 
@@ -25,7 +25,8 @@ class FuncGene(Gene):
     def random_gene(self) -> list:
         return self.encode(random.randint(l, r))
 
-    def encode(self, x):
+    @staticmethod
+    def encode(x):
         if x < 0:
             raise Exception(f'Number: {x} is negative')
         temp = [ord(i) - ord('0') for i in str(x)]
@@ -46,19 +47,22 @@ class FuncGene(Gene):
         return func(self.decode())
 
     def vary(self):
-        temp = self.data.copy()
         for i in range(FuncGene.variation_num):
             pos = random.randint(0, FuncGene.encode_length - 1)
             self.data[pos] = random.randint(0, 9)
-        if self.decode() > r or self.decode() < l:
-            self.data = temp
+        if self.decode() > r:
+            self.data = self.encode(r)
+        if self.decode() < l:
+            self.data = self.encode(l)
 
     def cross(self, another_gene):
         pos = random.randint(0, FuncGene.encode_length - 1)
         gene = FuncGene()
         gene.data = self.data[:pos] + another_gene.data[pos:]
-        if gene.decode() > r or gene.decode() < l:
-            return self
+        if gene.decode() > r:
+            gene.data = self.encode(r)
+        if gene.decode() < l:
+            gene.data = self.encode(l)
         return gene
 
 
@@ -74,7 +78,7 @@ def paint(genes):
     plt.title(f'Now answer: x={genes[0].decode()}, y={genes[0].fitness}')
     plt.plot(x, y)
     plt.plot([gene.decode() for gene in genes], [gene.fitness for gene in genes], '.r', ms=0.5)
-    plt.pause(0.01)
+    plt.pause(1)
 
 
 class FuncGA(GA):
